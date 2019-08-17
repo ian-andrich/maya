@@ -1,30 +1,35 @@
-language: python
-python:
+PYVERSION:
   - "2.7"
   - "3.6"
-  - "3.7-dev"
+  - "3.7"
 
 os:
     - windows
     - linux
 
-before_install:
-    # Here we just install Miniconda, which you shouldn't have to change.
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - eval "$(~/*conda*/bin/conda init)"
-  - export PATH=/home/travis/miniconda/bin:$PATH
+os:
+  windows:
+    before_install:
+        # Here we just install Miniconda, which you shouldn't have to change.
+      - wget http://repo.continuum.io/miniconda/Miniconda-latest-Windows-x86_64.sh -O miniconda.sh
+      - chmod +x miniconda.sh
+      - ./miniconda.sh -b
+      - eval "$(~/*conda*/bin/conda init)"
+      - export PATH=/home/travis/miniconda/bin:$PATH
+
+    install:
+      - conda create --yes -n test python=$PYVERSION
+      - source activate test
 
 matrix:
     allow_failures:
-        - python: "3.7-dev"
+        - PYVERSION: "3.7"
 
 # command to install dependencies
 install:
-    - pip install pipenv
-    - pipenv install '-e .' --skip-lock --ignore-pipfile
-    - pipenv install --dev --skip-lock
+  - pip install pipenv
+  - pipenv install '-e .' --skip-lock --ignore-pipfile
+  - pipenv install --dev --skip-lock
 
 # command to run tests
 script: pipenv run pytest tests/
