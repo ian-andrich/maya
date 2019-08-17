@@ -17,6 +17,9 @@ os:
     install:
       - conda create --yes -n test python=$PYVERSION
       - source activate test
+      - pip install pipenv
+      - pipenv install '-e .' --skip-lock --ignore-pipfile
+      - pipenv install --dev --skip-lock
 
   linux:
     before_install:
@@ -30,15 +33,12 @@ os:
     install:
       - conda create --yes -n test python=$PYVERSION
       - source activate test
+      - pip install pipenv
+      - pipenv install '-e .' --skip-lock --ignore-pipfile
+      - pipenv install --dev --skip-lock
 matrix:
     allow_failures:
         - PYVERSION: "3.7"
-
-# command to install dependencies
-install:
-  - pip install pipenv
-  - pipenv install '-e .' --skip-lock --ignore-pipfile
-  - pipenv install --dev --skip-lock
 
 # command to run tests
 script: pipenv run pytest tests/
