@@ -3,6 +3,11 @@ import time
 import calendar
 from datetime import timedelta, datetime as Datetime
 
+
+import hypothesis as h
+from hypothesis import strategies as s
+from hypothesis.extra.pytz import timezones
+import maya
 import pytz
 import pytest
 
@@ -57,6 +62,30 @@ def test_iso8601(string, expected):
 def test_parse_iso8601(string, expected):
     d = maya.MayaDT.from_iso8601(string)
     assert expected == d.iso8601()
+
+
+
+aware_datetimes = s.datetimes(timezones=timezones())
+
+
+@s.composite
+def iso8601_strings(draw) -> str:
+    """
+    This is a helper function that can help generate iso8601 timestamps.
+    """
+    dt = draw(aware_datetimes)
+    return maya.MayaDT.from_datetime(dt).iso8601()
+
+
+@h.given(iso_string=iso8601_strings())
+def test_iso_string_parsing(iso_string):
+    """
+    This test tests the functionality used by fanduel to parse
+    the slate_datetimes when we are parsing the slate information
+    on the sidebar and inferring a time.
+    """
+    result_dt = maya.parse(iso_string)
+    assert result_dt.iso8601() == iso_string
 
 
 @pytest.mark.usefixtures("frozen_now")
@@ -392,3 +421,6 @@ def test_snaptime(when_str, snap_str, expected_when):
     dt = dt.snap(snap_str)
     # then
     assert dt == maya.when(expected_when)
+
+
+
