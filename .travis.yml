@@ -9,10 +9,11 @@
 language : shell
 
 env:
+  - CONDA_PYTHON=2.7
+  - CONDA_PYTHON=3.4
+  - CONDA_PYTHON=3.5
   - CONDA_PYTHON=3.6
   - CONDA_PYTHON=3.7
-  - CONDA_PYTHON=3.7.1
-  - CONDA_PYTHON=nightly
 
 os:
   - linux
@@ -59,9 +60,7 @@ install:
 script:
   - conda --version && python --version && pip --version;
   - pip install pipenv
+    # Start of test script.
   - pipenv install '-e .' --skip-lock --ignore-pipfile
   - pipenv install --dev --skip-lock
   - pipenv run pytest tests/
-matrix:
-    allow_failures:
-        - PYVERSION: "3.7"
