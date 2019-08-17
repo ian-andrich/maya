@@ -9,7 +9,7 @@
 language : shell
 
 env:
-  - CONDA_PYTHON=2.7
+    # Not working - CONDA_PYTHON=2.7
   - CONDA_PYTHON=3.4
   - CONDA_PYTHON=3.5
   - CONDA_PYTHON=3.6
@@ -53,7 +53,11 @@ install:
   - conda config --set always_yes yes --set changeps1 no;
   - conda update -q conda;
   - echo "Python $CONDA_PYTHON running on $TRAVIS_OS_NAME";
-  - conda create --name test-environment python=$CONDA_PYTHON;
+  - if [[ "$CONDA_PYTHON" != "3.4" ]]; then
+        conda create --name test-environment python=$CONDA_PYTHON;
+    elif [[ "$CONDA_PYTHON" == "3.4"]]; then
+        conda create --name test-environment -c conda-forge python=$CONDA_PYTHON;
+    fi;
   - conda activate test-environment;
   - conda --version ; python --version ; pip --version;
 
